@@ -157,10 +157,20 @@ public class PrintRaw {
      */
     private boolean printToSocket() throws UnknownHostException, IOException {
         LogIt.log("Printing to host " + socketHost.get() + ":" + socketPort.get());
-        Socket socket = new Socket(socketHost.get(), socketPort.get());
-        DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-        out.write(getRawCmds().getByteArray());
-        socket.close();
+        DataOutputStream out=null;
+        Socket socket=null;
+        try{
+            socket = new Socket(socketHost.get(), socketPort.get());
+            out = new DataOutputStream(socket.getOutputStream());
+            out.write(getRawCmds().getByteArray());
+        } finally{
+            if(out!=null)
+                out.close();
+            if(socket!=null)
+                socket.close();
+            socketHost.set(null);
+            socketPort.set(null);
+        }
         return true;
     }
 
